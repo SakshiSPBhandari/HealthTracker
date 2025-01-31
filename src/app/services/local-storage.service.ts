@@ -11,20 +11,34 @@ export class LocalStorageService {
   }
 
   private initializeDefaultData() {
-    if (!localStorage.getItem(this.storageKey)) {
+    // Check if 'workouts' exists in localStorage and if it's empty
+    if (!localStorage.getItem(this.storageKey) || localStorage.getItem(this.storageKey) === '[]') {
       const defaultData = [
-        [
-          { username: 'john doe', workoutType: 'Running', minutes: 30 },
-          { username: 'john doe', workoutType: 'Cycling', minutes: 45 },
-          { username: 'jane smith', workoutType: 'Swimming', minutes: 60 },
-          { username: 'jane smith', workoutType: 'Running', minutes: 20 },
-          { username: 'mike johnson', workoutType: 'Yoga', minutes: 50 },
-          { username: 'mike johnson', workoutType: 'Cycling', minutes: 40 }
-        ]
-        
+        { username: 'john doe', workoutType: 'Running', minutes: 30 },
+        { username: 'john doe', workoutType: 'Cycling', minutes: 45 },
+        { username: 'jane smith', workoutType: 'Swimming', minutes: 60 },
+        { username: 'jane smith', workoutType: 'Running', minutes: 20 },
+        { username: 'mike johnson', workoutType: 'Yoga', minutes: 50 },
+        { username: 'mike johnson', workoutType: 'Cycling', minutes: 40 }
       ];
-      localStorage.setItem(this.storageKey, JSON.stringify(defaultData));
+
+      // Capitalize the usernames before saving them to localStorage
+      const capitalizedDefaultData = defaultData.map(workout => ({
+        ...workout,
+        username: this.capitalizeUsername(workout.username)
+      }));
+
+      // Save capitalized data to localStorage
+      localStorage.setItem(this.storageKey, JSON.stringify(capitalizedDefaultData));
     }
+  }
+
+  // Capitalize the first letter of each word in the username
+  private capitalizeUsername(username: string): string {
+    return username
+      .split(' ') // Split by space
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Capitalize first letter of each word
+      .join(' '); // Join back the words with space
   }
 
   getWorkouts(): any[] {
@@ -37,10 +51,16 @@ export class LocalStorageService {
       return []; 
     }
   }
-  
+
   saveWorkout(workout: any) {
+    // Capitalize the username before saving
+    const capitalizedWorkout = {
+      ...workout,
+      username: this.capitalizeUsername(workout.username)
+    };
+
     const workouts = this.getWorkouts();
-    workouts.push(workout);
+    workouts.push(capitalizedWorkout);
     localStorage.setItem(this.storageKey, JSON.stringify(workouts));
   }
 }
