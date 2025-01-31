@@ -13,12 +13,15 @@ export class LocalStorageService {
   private initializeDefaultData() {
     if (!localStorage.getItem(this.storageKey)) {
       const defaultData = [
-        { username: 'John Doe', workoutType: 'Running', minutes: 30 },
-        { username: 'John Doe', workoutType: 'Cycling', minutes: 45 },
-        { username: 'Jane Smith', workoutType: 'Swimming', minutes: 60 },
-        { username: 'Jane Smith', workoutType: 'Running', minutes: 20 },
-        { username: 'Mike Johnson', workoutType: 'Yoga', minutes: 50 },
-        { username: 'Mike Johnson', workoutType: 'Cycling', minutes: 40 }
+        [
+          { username: 'john doe', workoutType: 'Running', minutes: 30 },
+          { username: 'john doe', workoutType: 'Cycling', minutes: 45 },
+          { username: 'jane smith', workoutType: 'Swimming', minutes: 60 },
+          { username: 'jane smith', workoutType: 'Running', minutes: 20 },
+          { username: 'mike johnson', workoutType: 'Yoga', minutes: 50 },
+          { username: 'mike johnson', workoutType: 'Cycling', minutes: 40 }
+        ]
+        
       ];
       localStorage.setItem(this.storageKey, JSON.stringify(defaultData));
     }
