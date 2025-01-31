@@ -1,0 +1,37 @@
+<form [formGroup]="workoutForm" 
+      (ngSubmit)="onSubmit()" 
+      class="workout-form p-6 bg-white shadow-md rounded-xl border border-gray-200 w-full max-w-lg mx-auto">
+      
+  <h2 class="text-2xl font-semibold text-gray-700 mb-5 text-center">🏋️‍♂️ Add Workout</h2>
+
+  <div class="space-y-4">
+    <mat-form-field appearance="outline" class="mat-field-custom">
+      <mat-label>Username</mat-label>
+      <input matInput formControlName="username" placeholder="Enter username">
+      <mat-error *ngIf="workoutForm.get('username')?.hasError('required')">Username is required</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="mat-field-custom">
+      <mat-label>Workout Type</mat-label>
+      <mat-select formControlName="workoutType">
+        <mat-option value="Cardio">Cardio</mat-option>
+        <mat-option value="Strength">Strength</mat-option>
+        <mat-option value="Yoga">Yoga</mat-option>
+        <mat-option value="Running">Running</mat-option>
+        <mat-option value="Swimming">Swimming</mat-option>
+      </mat-select>
+      <mat-error *ngIf="workoutForm.get('workoutType')?.hasError('required')">Workout type is required</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="mat-field-custom">
+      <mat-label>Minutes</mat-label>
+      <input matInput type="number" formControlName="minutes" min="1" placeholder="Enter minutes">
+      <mat-error *ngIf="workoutForm.get('minutes')?.hasError('required')">Minutes are required</mat-error>
+      <mat-error *ngIf="workoutForm.get('minutes')?.hasError('min')">Must be at least 1 min</mat-error>
+    </mat-form-field>
+  </div>
+
+  <button mat-raised-button color="primary" [disabled]="workoutForm.invalid" class="submit-btn">
+    ➕Add Workout
+  </button>
+</form>

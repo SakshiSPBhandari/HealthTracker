@@ -1,11 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { WorkoutFormComponent } from '../app/components/workout-form/workout-form.component';
-import { ReactiveFormsModule } from '@angular/forms';
+import { WorkoutFormComponent } from './workout-form.component';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { EventEmitter } from '@angular/core';
 
 describe('WorkoutFormComponent', () => {
   let component: WorkoutFormComponent;
@@ -15,6 +16,7 @@ describe('WorkoutFormComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         ReactiveFormsModule,
+        FormsModule,
         NoopAnimationsModule,
         MatFormFieldModule,
         MatInputModule,
@@ -26,6 +28,7 @@ describe('WorkoutFormComponent', () => {
 
     fixture = TestBed.createComponent(WorkoutFormComponent);
     component = fixture.componentInstance;
+    component.addWorkout = new EventEmitter();
     fixture.detectChanges();
   });
 
@@ -37,7 +40,7 @@ describe('WorkoutFormComponent', () => {
     expect(component.workoutForm.value).toEqual({
       username: '',
       workoutType: '',
-      minutes: ''  // Changed from null to '' to match actual initialization
+      minutes: ''
     });
     expect(component.workoutForm.valid).toBeFalse();
   });
@@ -45,7 +48,7 @@ describe('WorkoutFormComponent', () => {
   it('should validate required fields', () => {
     const form = component.workoutForm;
     
-    // Check initial state - all fields should be invalid with required error
+    // Check initial state
     expect(form.get('username')?.errors?.['required']).toBeTrue();
     expect(form.get('workoutType')?.errors?.['required']).toBeTrue();
     expect(form.get('minutes')?.errors?.['required']).toBeTrue();
@@ -56,6 +59,8 @@ describe('WorkoutFormComponent', () => {
       workoutType: 'running',
       minutes: 30
     });
+
+    fixture.detectChanges();
 
     // Check that fields are now valid
     expect(form.get('username')?.valid).toBeTrue();
@@ -86,17 +91,35 @@ describe('WorkoutFormComponent', () => {
     };
 
     component.workoutForm.setValue(testWorkout);
+    fixture.detectChanges();
+    
     component.onSubmit();
-
     expect(emitSpy).toHaveBeenCalledWith(testWorkout);
   });
 
-  it('should not emit or reset on invalid form submission', () => {
+  it('should not emit on invalid form submission', () => {
     const emitSpy = spyOn(component.addWorkout, 'emit');
-    
     component.onSubmit();
-
     expect(emitSpy).not.toHaveBeenCalled();
     expect(component.workoutForm.get('username')?.errors?.['required']).toBeTrue();
+  });
+
+  it('should handle form submission with trimmed values', () => {
+    const emitSpy = spyOn(component.addWorkout, 'emit');
+    const testWorkout = {
+      username: '  testuser  ',
+      workoutType: 'running',
+      minutes: 30
+    };
+
+    component.workoutForm.setValue(testWorkout);
+    fixture.detectChanges();
+    
+    component.onSubmit();
+    expect(emitSpy).toHaveBeenCalledWith({
+      username: 'testuser',
+      workoutType: 'running',
+      minutes: 30
+    });
   });
 });

@@ -1,0 +1,65 @@
+<div class="workout-container">
+  <h2 class="workout-title">🏋️ Workout Records</h2>
+
+  <div class="filter-container">
+    <div class="filter-input">
+      <span class="filter-icon">🔎</span>
+      <input 
+        type="text" 
+        [(ngModel)]="filterUsername" 
+        (input)="applyFilters()" 
+        placeholder="Filter by Username"
+      />
+    </div>
+    <div class="filter-input">
+      <span class="filter-icon">🏃</span>
+      <input 
+        type="text" 
+        [(ngModel)]="filterWorkoutType" 
+        (input)="applyFilters()" 
+        placeholder="Filter by Workout Type"
+      />
+    </div>
+  </div>
+
+<div class="table-container">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Workouts</th>
+        <th>Number of Workouts</th>
+        <th>Total Workout Minutes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let workout of paginatedWorkouts">
+        <td>{{ workout.username }}</td>
+        <td>{{ workout.workouts.join(', ') }}</td>
+        <td>{{ workout.workoutCount }}</td>
+        <td>{{ workout.minutes }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+  <div class="pagination">
+    <button 
+      (click)="changePage(-1)" 
+      [disabled]="currentPage === 1"
+      class="prev" 
+      [class.disabled]="currentPage === 1"
+    >
+      ⬅️ <span>Previous</span>
+    </button>
+    <span class="page-info">Page {{ currentPage }} of {{ totalPages }}</span>
+    <button 
+      (click)="changePage(1)" 
+      [disabled]="currentPage >= totalPages"
+      class="next"
+      [class.disabled]="currentPage >= totalPages"
+    >
+      <span>Next</span> ➡️
+    </button>
+  </div>
+  

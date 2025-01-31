@@ -1,0 +1,15 @@
+<div class="chart-container">
+  <h2 class="text-xl font-semibold mb-4">Workout Progress</h2>
+
+  <mat-form-field appearance="outline" class="w-full max-w-md mb-4">
+    <mat-label>Select User</mat-label>
+    <mat-select [(ngModel)]="selectedUser" (selectionChange)="updateChart()">
+      <mat-option value="">All Users</mat-option>
+      <mat-option *ngFor="let user of uniqueUsernames" [value]="user">{{ user }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <div class="chart-wrapper">
+    <canvas #chartCanvas></canvas>
+  </div>
+</div>
