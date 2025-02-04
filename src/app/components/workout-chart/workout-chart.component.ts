@@ -2,15 +2,13 @@ import { Component, Input, OnChanges, ViewChild, ElementRef, AfterViewInit } fro
 import { CommonModule } from '@angular/common';
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
 import { FormsModule } from '@angular/forms';
-import { MatSelectModule } from '@angular/material/select'; 
-import { MatFormFieldModule } from '@angular/material/form-field'; 
 
 Chart.register(...registerables);
 
 @Component({
   selector: 'app-workout-chart',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatSelectModule, MatFormFieldModule],  
+  imports: [CommonModule, FormsModule,],  
   templateUrl: './workout-chart.component.html',
   styleUrls: ['./workout-chart.component.css']
 })

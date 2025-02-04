@@ -48,7 +48,6 @@ describe('WorkoutTableComponent', () => {
   describe('Initialization', () => {
     it('should initialize with default values', () => {
       expect(component.filterUsername).toBe('');
-      expect(component.filterWorkoutType).toBe('');
       expect(component.currentPage).toBe(1);
       expect(component.pageSize).toBe(5);
     });
@@ -74,14 +73,7 @@ describe('WorkoutTableComponent', () => {
       expect(component.filteredWorkouts[0].username).toBe('user1');
     });
 
-    it('should filter by workout type', () => {
-      component.filterWorkoutType = 'Running';
-      component.applyFilters();
-      expect(component.filteredWorkouts.length).toBe(2);
-      expect(component.filteredWorkouts[0].workouts).toContain('Running');
-    });
-
-    it('should handle case-insensitive filtering', () => {
+    it('should handle case-insensitive filtering by username', () => {
       component.filterUsername = 'USER1';
       component.applyFilters();
       expect(component.filteredWorkouts.length).toBe(1);
@@ -90,7 +82,6 @@ describe('WorkoutTableComponent', () => {
 
     it('should handle empty filters', () => {
       component.filterUsername = '';
-      component.filterWorkoutType = '';
       component.applyFilters();
       expect(component.filteredWorkouts.length).toBe(4);
     });

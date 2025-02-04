@@ -37,7 +37,7 @@ describe('WorkoutFormComponent', () => {
     expect(component.workoutForm.value).toEqual({
       username: '',
       workoutType: '',
-      minutes: ''  // Changed from null to '' to match actual initialization
+      minutes: '' 
     });
     expect(component.workoutForm.valid).toBeFalse();
   });
@@ -45,19 +45,16 @@ describe('WorkoutFormComponent', () => {
   it('should validate required fields', () => {
     const form = component.workoutForm;
     
-    // Check initial state - all fields should be invalid with required error
     expect(form.get('username')?.errors?.['required']).toBeTrue();
     expect(form.get('workoutType')?.errors?.['required']).toBeTrue();
     expect(form.get('minutes')?.errors?.['required']).toBeTrue();
 
-    // Fill in valid data
     form.patchValue({
       username: 'testuser',
       workoutType: 'running',
       minutes: 30
     });
 
-    // Check that fields are now valid
     expect(form.get('username')?.valid).toBeTrue();
     expect(form.get('workoutType')?.valid).toBeTrue();
     expect(form.get('minutes')?.valid).toBeTrue();

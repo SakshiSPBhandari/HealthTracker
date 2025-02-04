@@ -50,16 +50,16 @@ describe('WorkoutChartComponent', () => {
   it('should update chart on changes if canvas exists', () => {
     const spy = spyOn(component, 'updateChart');
     component.ngOnChanges({});
-    expect(spy).not.toHaveBeenCalled(); // Canvas not initialized yet
+    expect(spy).not.toHaveBeenCalled();
 
-    fixture.detectChanges(); // This triggers ngAfterViewInit
+    fixture.detectChanges(); 
     component.ngOnChanges({});
     expect(spy).toHaveBeenCalled();
   });
 
   describe('updateChart', () => {
     beforeEach(() => {
-      fixture.detectChanges(); // Initialize canvas
+      fixture.detectChanges();
     });
 
     it('should create chart with filtered workouts when user selected', () => {
@@ -69,7 +69,7 @@ describe('WorkoutChartComponent', () => {
       const chartData = (component.chart as Chart).data;
       expect(chartData.labels).toContain('Running');
       expect(chartData.labels).toContain('Cycling');
-      expect(chartData.datasets[0].data).toEqual([30, 45]); // user1's workout minutes
+      expect(chartData.datasets[0].data).toEqual([30, 45]); 
     });
 
 

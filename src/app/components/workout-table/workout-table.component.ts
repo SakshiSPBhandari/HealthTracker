@@ -1,43 +1,35 @@
-import { Component, OnInit, OnChanges, Input } from '@angular/core';
+import { Component, Input, OnInit, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MatTableModule } from '@angular/material/table';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
 
 @Component({
   selector: 'app-workout-table',
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule,
-    MatTableModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatCardModule
+    FormsModule
   ],
-  templateUrl: './workout-table.component.html',
-  styleUrls: ['./workout-table.component.css']
+  templateUrl: './workout-table.component.html'
 })
 export class WorkoutTableComponent implements OnInit, OnChanges {
-  
   @Input() workouts: any[] = [];
-
+  
   filterUsername: string = '';
-  filterWorkoutType: string = '';
+  dropdownOpen: boolean = false;
+  workoutTypes: string[] = ['Cardio', 'Strength', 'Yoga', 'Running', 'Swimming'];
+  selectedWorkoutTypes: { [key: string]: boolean } = {};
+  allSelected: boolean = true;
+  
   filteredWorkouts: any[] = [];
   paginatedWorkouts: any[] = [];
   currentPage: number = 1;
   pageSize: number = 5;
-  
-  displayedColumns: string[] = ['username', 'workouts', 'workoutCount', 'minutes'];
+  totalPages: number = 1;
 
-
-  get totalPages(): number {
-    return Math.ceil(this.filteredWorkouts.length / this.pageSize);
+  constructor() {
+    this.workoutTypes.forEach(type => {
+      this.selectedWorkoutTypes[type] = true;
+    });
   }
 
   ngOnInit() {
@@ -47,58 +39,76 @@ export class WorkoutTableComponent implements OnInit, OnChanges {
   ngOnChanges() {
     this.applyFilters();
   }
-  applyFilters() {
-    let filteredData = [...this.workouts];
-  
-    if (this.filterUsername.trim() !== '') {
-      filteredData = filteredData.filter(workout =>
-        workout.username.toLowerCase().includes(this.filterUsername.toLowerCase())
-      );
-    }
-  
-    if (this.filterWorkoutType.trim() !== '') {
-      filteredData = filteredData.filter(workout =>
-        workout.workoutType.toLowerCase().includes(this.filterWorkoutType.toLowerCase())
-      );
-    }
-  
-    const workoutMap = new Map<string, any>();
-  
-    filteredData.forEach(workout => {
-      const key = workout.username;
-  
-      if (workoutMap.has(key)) {
-        const existing = workoutMap.get(key);
-        existing.workoutCount += 1;
-        existing.minutes += workout.minutes;
-        if (!existing.workouts.includes(workout.workoutType)) {
-          existing.workouts.push(workout.workoutType);
-        }
-      } else {
-        workoutMap.set(key, {
-          username: workout.username,
-          workouts: [workout.workoutType],
-          workoutCount: 1,
-          minutes: workout.minutes
-        });
-      }
+
+  toggleDropdown() {
+    this.dropdownOpen = !this.dropdownOpen;
+  }
+
+  selectAllWorkoutTypes() {
+    this.allSelected = !this.allSelected;
+    this.workoutTypes.forEach(type => {
+      this.selectedWorkoutTypes[type] = this.allSelected;
     });
-  
-    this.filteredWorkouts = Array.from(workoutMap.values());
+    this.applyFilters();
+  }
+
+  toggleWorkoutType(type: string) {
+    this.selectedWorkoutTypes[type] = !this.selectedWorkoutTypes[type];
+    this.allSelected = this.workoutTypes.every(type => this.selectedWorkoutTypes[type]);
+    this.applyFilters();
+  }
+
+  getSelectedWorkoutTypesText(): string {
+    const selectedTypes = this.workoutTypes.filter(type => this.selectedWorkoutTypes[type]);
+    if (selectedTypes.length === this.workoutTypes.length) return 'All Workout Types';
+    if (selectedTypes.length === 0) return 'Select Workout Types';
+    if (selectedTypes.length <= 2) return selectedTypes.join(', ');
+    return `${selectedTypes.length} types selected`;
+  }
+
+  applyFilters() {
+    let groupedWorkouts = this.workouts.reduce((acc: any, curr: any) => {
+      if (!acc[curr.username]) {
+        acc[curr.username] = {
+          username: curr.username,
+          workouts: new Set(),
+          workoutCount: 0,
+          minutes: 0
+        };
+      }
+      acc[curr.username].workouts.add(curr.workoutType);
+      acc[curr.username].workoutCount++;
+      acc[curr.username].minutes += curr.minutes;
+      return acc;
+    }, {});
+
+    this.filteredWorkouts = Object.values(groupedWorkouts)
+      .map((workout: any) => ({
+        ...workout,
+        workouts: Array.from(workout.workouts)
+      }))
+      .filter(workout => {
+        const usernameMatch = workout.username.toLowerCase().includes(this.filterUsername.toLowerCase());
+        const workoutTypeMatch = workout.workouts.some((type: string) => 
+          this.selectedWorkoutTypes[type]
+        );
+        return usernameMatch && workoutTypeMatch;
+      });
+
+    this.totalPages = Math.ceil(this.filteredWorkouts.length / this.pageSize);
     this.currentPage = 1;
     this.updatePaginatedWorkouts();
   }
-  
 
   updatePaginatedWorkouts() {
-    const startIndex = (this.currentPage - 1) * this.pageSize;
-    const endIndex = startIndex + this.pageSize;
-    this.paginatedWorkouts = this.filteredWorkouts.slice(startIndex, endIndex);
+    const start = (this.currentPage - 1) * this.pageSize;
+    const end = start + this.pageSize;
+    this.paginatedWorkouts = this.filteredWorkouts.slice(start, end);
   }
 
-  changePage(increment: number) {
-    const newPage = this.currentPage + increment;
-    if (newPage > 0 && newPage <= this.totalPages) {
+  changePage(delta: number) {
+    const newPage = this.currentPage + delta;
+    if (newPage >= 1 && newPage <= this.totalPages) {
       this.currentPage = newPage;
       this.updatePaginatedWorkouts();
     }

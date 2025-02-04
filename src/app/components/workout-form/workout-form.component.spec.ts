@@ -48,12 +48,10 @@ describe('WorkoutFormComponent', () => {
   it('should validate required fields', () => {
     const form = component.workoutForm;
     
-    // Check initial state
     expect(form.get('username')?.errors?.['required']).toBeTrue();
     expect(form.get('workoutType')?.errors?.['required']).toBeTrue();
     expect(form.get('minutes')?.errors?.['required']).toBeTrue();
 
-    // Fill in valid data
     form.patchValue({
       username: 'testuser',
       workoutType: 'running',
@@ -62,7 +60,6 @@ describe('WorkoutFormComponent', () => {
 
     fixture.detectChanges();
 
-    // Check that fields are now valid
     expect(form.get('username')?.valid).toBeTrue();
     expect(form.get('workoutType')?.valid).toBeTrue();
     expect(form.get('minutes')?.valid).toBeTrue();

@@ -1,65 +1,111 @@
-<div class="workout-container">
-  <h2 class="workout-title">🏋️ Workout Records</h2>
+<div class="workout-container max-w-7xl w-full mx-auto p-8 bg-white rounded-xl shadow-xl flex flex-col items-center">
+  <h2 class="workout-title text-2xl font-bold text-center text-gray-800 mb-6">🏋️ Workout Records</h2>
 
-  <div class="filter-container">
-    <div class="filter-input">
-      <span class="filter-icon">🔎</span>
+  <div class="filter-container grid grid-cols-2 gap-6 mb-4" style="max-width: 80%;">
+    <div class="filter-input w-[22rem] relative">
       <input 
         type="text" 
         [(ngModel)]="filterUsername" 
         (input)="applyFilters()" 
         placeholder="Filter by Username"
+        class="w-full py-3 px-4 pl-10 border border-gray-300 rounded-full shadow-sm text-base
+               focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 ease-in-out"
       />
+      <span class="filter-icon absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500">🔎</span>
     </div>
-    <div class="filter-input">
-      <span class="filter-icon">🏃</span>
-      <input 
-        type="text" 
-        [(ngModel)]="filterWorkoutType" 
-        (input)="applyFilters()" 
-        placeholder="Filter by Workout Type"
-      />
+  
+    <div class="filter-input w-[22rem] relative">
+      <div class="relative">
+        <button
+          (click)="toggleDropdown()"
+          class="min-w-[22rem] max-w-[22rem] w-full py-3 px-4 pl-10 border border-gray-300 rounded-full shadow-sm text-base
+                 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 ease-in-out text-left"
+        >
+          <span class="block truncate">
+            {{ getSelectedWorkoutTypesText() }}
+          </span>
+        </button>
+        <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500">🏃</span>
+  
+        <div *ngIf="dropdownOpen" 
+             class="absolute z-50 left-0 w-[22rem] bg-white border rounded-lg shadow-lg mt-2 py-2">
+          <div class="px-4 py-2 border-b border-gray-100">
+            <label class="flex items-center w-full hover:bg-gray-50 rounded cursor-pointer p-2">
+              <div class="flex items-center">
+                <div class="w-6 h-6 flex items-center justify-center">
+                  <input 
+                    type="checkbox" 
+                    [checked]="allSelected" 
+                    (change)="selectAllWorkoutTypes()"
+                    class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  >
+                </div>
+                <span class="ml-3 font-medium text-gray-700">All Workout Types</span>
+              </div>
+            </label>
+          </div>
+  
+          <div class="max-h-48 overflow-y-auto py-1">
+            <label *ngFor="let type of workoutTypes" 
+                   class="flex items-center w-full hover:bg-gray-50 cursor-pointer px-4">
+              <div class="flex items-center w-full p-2">
+                <div class="w-6 h-6 flex items-center justify-center">
+                  <input 
+                    type="checkbox" 
+                    [checked]="selectedWorkoutTypes[type]" 
+                    (change)="toggleWorkoutType(type)"
+                    class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  >
+                </div>
+                <span class="ml-3 text-gray-700">{{ type }}</span>
+              </div>
+            </label>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
+  
 
-<div class="table-container">
-  <table class="table">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Workouts</th>
-        <th>Number of Workouts</th>
-        <th>Total Workout Minutes</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let workout of paginatedWorkouts">
-        <td>{{ workout.username }}</td>
-        <td>{{ workout.workouts.join(', ') }}</td>
-        <td>{{ workout.workoutCount }}</td>
-        <td>{{ workout.minutes }}</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+  <div class="table-container w-full max-w-7xl mx-auto border border-gray-200 rounded-xl bg-gray-50 shadow-sm overflow-hidden mb-8">
+    <table class="table w-full border-collapse table-auto">
+      <thead class="bg-blue-600 text-white text-sm uppercase">
+        <tr>
+          <th class="py-3 px-4 text-left">Name</th>
+          <th class="py-3 px-4 text-left">Workouts</th>
+          <th class="py-3 px-4 text-left">Number of Workouts</th>
+          <th class="py-3 px-4 text-left">Total Workout Minutes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let workout of paginatedWorkouts" class="border-b border-gray-100 hover:bg-blue-50 transition-all duration-300 ease-in-out">
+          <td class="py-3 px-4">{{ workout.username }}</td>
+          <td class="py-3 px-4">{{ workout.workouts.join(', ') }}</td>
+          <td class="py-3 px-4">{{ workout.workoutCount }}</td>
+          <td class="py-3 px-4">{{ workout.minutes }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
-  <div class="pagination">
+  <!-- Pagination -->
+  <div class="pagination w-full flex justify-center items-center mt-8">
     <button 
       (click)="changePage(-1)" 
       [disabled]="currentPage === 1"
-      class="prev" 
-      [class.disabled]="currentPage === 1"
+      class="prev flex items-center gap-2 py-3 px-6 rounded-full text-base font-semibold text-gray-800 bg-gray-200 border-2 border-gray-300 shadow-sm hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 ease-in-out"
     >
       ⬅️ <span>Previous</span>
     </button>
-    <span class="page-info">Page {{ currentPage }} of {{ totalPages }}</span>
+    
+    <span class="page-info font-bold text-xl text-gray-700 mx-4">Page {{ currentPage }} of {{ totalPages }}</span>
+    
     <button 
       (click)="changePage(1)" 
       [disabled]="currentPage >= totalPages"
-      class="next"
-      [class.disabled]="currentPage >= totalPages"
+      class="next flex items-center gap-2 py-3 px-6 rounded-full text-base font-semibold text-white bg-blue-500 border-2 border-blue-600 shadow-sm hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 ease-in-out"
     >
       <span>Next</span> ➡️
     </button>
   </div>
-  
+</div>
