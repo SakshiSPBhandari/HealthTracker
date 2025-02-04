@@ -1,3 +1,7 @@
+
+![image](https://github.com/user-attachments/assets/72b546fe-dccd-44d3-9be8-2c7cab1fe245)
+
+
 # WorkoutTracker
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.1.5.
